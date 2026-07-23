@@ -1,0 +1,45 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build seafile-iOS (iphonesimulator)
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout (with submodules)
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+
+      - name: Install CocoaPods
+        run: gem install cocoapods
+
+      - name: Pod install
+        run: pod install --repo-update
+
+      - name: Build (iOS Simulator, code signing disabled)
+        run: |
+          set -o pipefail
+          xcodebuild \
+            -workspace seafilePro.xcworkspace \
+            -scheme seafile-appstore \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            clean build \
+            CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO
