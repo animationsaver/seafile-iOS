@@ -229,11 +229,21 @@
     UIBarButtonItem *cancelItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self action:@selector(cancel:)];
     self.navigationItem.leftBarButtonItem = cancelItem;
 
-    loginButton.layer.borderColor = [[SeafTheme primarySurface] CGColor];
+    // Apple-standard filled accent button for the primary Login action
+    // (system accent background with white title and a continuous 10pt corner
+    // curve), replacing the previous flat 4pt-corner style.
+    loginButton.backgroundColor = [UIColor systemBlueColor];
+    [loginButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
+    [loginButton setTitleColor:[[UIColor whiteColor] colorWithAlphaComponent:0.7] forState:UIControlStateHighlighted];
     loginButton.layer.borderWidth = 0.0f;
-    loginButton.layer.cornerRadius = 4.0f;
+    loginButton.layer.cornerRadius = 10.0f;
+    if (@available(iOS 13.0, *)) {
+        loginButton.layer.cornerCurve = kCACornerCurveContinuous;
+    }
     [loginButton setTitle:NSLocalizedString(@"Login", @"Seafile") forState:UIControlStateNormal];
     [loginButton setTitle:NSLocalizedString(@"Login", @"Seafile") forState:UIControlStateHighlighted];
+    // Native accent text-link styling for the secondary Privacy Policy action.
+    [self.privacyPolicyButton setTitleColor:[UIColor systemBlueColor] forState:UIControlStateNormal];
     [self.privacyPolicyButton setTitle:NSLocalizedString(@"Privacy Policy", @"Seafile") forState:UIControlStateNormal];
 
     _httpsLabel.text = @"https";
