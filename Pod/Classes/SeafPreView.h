@@ -32,14 +32,11 @@ enum SET_REPO_PASSWORD_RET {
 - (void)entry:(SeafBase *)entry repoPasswordSet:(int)ret;
 @end
 
-/**
- Protocol defining download-related delegate methods.
- */
-@protocol SeafDentryDelegate
-- (void)download:(SeafBase *)entry progress:(float)progress;///< Notifies delegate of download progress.
-- (void)download:(SeafBase *)entry complete:(BOOL)updated;///< Notifies delegate when download is complete.
-- (void)download:(SeafBase *)entry failed:(NSError *)error;///< Notifies delegate when download fails.
-@end
+// The SeafDentryDelegate protocol is defined canonically in SeafBase.h.
+// Only a forward declaration is needed here; redefining it caused a duplicate /
+// ambiguous protocol definition that fails to compile with modern clang
+// (Xcode 15+): "reference to 'SeafDentryDelegate' is ambiguous".
+@protocol SeafDentryDelegate;
 
 /**
  Protocol for objects that are sortable based on their attributes.
