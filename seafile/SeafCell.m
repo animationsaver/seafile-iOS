@@ -73,6 +73,22 @@
 
     // Add rounded corners to the imageView
     self.imageView.layer.cornerRadius = 5.0f;
+
+    // Dynamic Type (Apple-standard typography): scale the file-list labels
+    // relative to their XIB-designed size so they honor the user's preferred
+    // content size. UIFontMetrics keeps the size identical at the default
+    // content size category and only scales for accessibility, so there is
+    // no layout jump for existing rows.
+    if (@available(iOS 11.0, *)) {
+        if (self.textLabel.font) {
+            self.textLabel.font = [[UIFontMetrics metricsForTextStyle:UIFontTextStyleBody] scaledFontForFont:self.textLabel.font];
+        }
+        if (self.detailTextLabel.font) {
+            self.detailTextLabel.font = [[UIFontMetrics metricsForTextStyle:UIFontTextStyleFootnote] scaledFontForFont:self.detailTextLabel.font];
+        }
+    }
+    self.textLabel.adjustsFontForContentSizeCategory = YES;
+    self.detailTextLabel.adjustsFontForContentSizeCategory = YES;
 }
 
 - (void)layoutSubviews {
