@@ -33,11 +33,13 @@
         navigationController.navigationBar.standardAppearance = appearance;
         navigationController.navigationBar.scrollEdgeAppearance = appearance;
 
-        navigationController.navigationBar.tintColor = [SeafTheme primaryText];
+        // Apple-standard: bar button items use the system accent (systemBlue),
+        // while the (large) title keeps the label color set above.
+        navigationController.navigationBar.tintColor = [UIColor systemBlueColor];
     } else {
         navigationController.navigationBar.barTintColor = [SeafTheme primarySurface];
         navigationController.navigationBar.translucent = NO;
-        navigationController.navigationBar.tintColor = [SeafTheme primaryText];
+        navigationController.navigationBar.tintColor = [UIColor systemBlueColor];
 
         navigationController.navigationBar.shadowImage = [self createSinglePixelImageWithColor:[UIColor opaqueSeparatorColor]];
     }
