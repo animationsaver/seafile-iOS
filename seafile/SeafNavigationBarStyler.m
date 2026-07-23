@@ -77,16 +77,27 @@
 + (UIBarButtonItem *)createBackButtonWithTarget:(id)target action:(SEL)action color:(nullable UIColor *)color {
     // Create more precise back button using custom view
     UIButton *customBackButton = [UIButton buttonWithType:UIButtonTypeCustom];
-    
-    // Get original image
-    UIImage *originalImage = [UIImage imageNamed:@"arrowLeft_black"];
-    
-    // Apply tint if color specified
-    if (color) {
-        originalImage = [self imageWithTintColor:color image:originalImage];
+
+    // Apple-standard: prefer the SF Symbol "chevron.backward" for the back
+    // indicator. Use template rendering + tintColor so it adapts to light/dark
+    // mode and honors the requested tint (defaulting to the system accent).
+    UIImage *symbolImage = nil;
+    if (@available(iOS 13.0, *)) {
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:18 weight:UIImageSymbolWeightSemibold];
+        symbolImage = [[UIImage systemImageNamed:@"chevron.backward" withConfiguration:config] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     }
-    
-    [customBackButton setImage:originalImage forState:UIControlStateNormal];
+
+    if (symbolImage) {
+        [customBackButton setImage:symbolImage forState:UIControlStateNormal];
+        customBackButton.tintColor = color ?: [UIColor systemBlueColor];
+    } else {
+        // Legacy fallback: bundled bitmap image with optional manual tint
+        UIImage *originalImage = [UIImage imageNamed:@"arrowLeft_black"];
+        if (color) {
+            originalImage = [self imageWithTintColor:color image:originalImage];
+        }
+        [customBackButton setImage:originalImage forState:UIControlStateNormal];
+    }
     
     // Set button size and hit area
     customBackButton.frame = CGRectMake(0, 0, 30, 44); // Increase touch area
