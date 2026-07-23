@@ -133,20 +133,26 @@
 
 - (void)updateCheckboxImageForSelected:(BOOL)selected
 {
-    NSString *imageName = selected ? @"ic_checkbox_checked" : @"ic_checkbox_unchecked";
-    UIImage *image = [UIImage imageNamed:imageName];
+    // Apple-standard multi-select indicator: use SF Symbols with semantic
+    // colors (accent for the checked state, tertiary label for unchecked),
+    // matching the native editing checkmarks in Mail/Photos and removing the
+    // previous hard-coded white tints. Falls back to the bundled asset images
+    // when SF Symbols are unavailable (iOS < 13).
     if (@available(iOS 13.0, *)) {
-        if (self.traitCollection.userInterfaceStyle == UIUserInterfaceStyleDark) {
-            image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-            self.checkboxImageView.tintColor = selected
-                ? [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.7]
-                : [UIColor colorWithRed:1.0 green:1.0 blue:1.0 alpha:0.2];
-        } else {
-            image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysOriginal];
-            self.checkboxImageView.tintColor = nil;
+        UIImageSymbolConfiguration *config = [UIImageSymbolConfiguration configurationWithPointSize:22 weight:UIImageSymbolWeightRegular];
+        NSString *symbolName = selected ? @"checkmark.circle.fill" : @"circle";
+        UIImage *symbol = [UIImage systemImageNamed:symbolName withConfiguration:config];
+        if (symbol) {
+            self.checkboxImageView.image = [symbol imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+            self.checkboxImageView.tintColor = selected ? [UIColor systemBlueColor] : [UIColor tertiaryLabelColor];
+            return;
         }
     }
-    self.checkboxImageView.image = image;
+
+    // Legacy fallback: bundled asset images (used on iOS < 13).
+    NSString *imageName = selected ? @"ic_checkbox_checked" : @"ic_checkbox_unchecked";
+    self.checkboxImageView.image = [UIImage imageNamed:imageName];
+    self.checkboxImageView.tintColor = nil;
 }
 
 - (void)setEditing:(BOOL)editing animated:(BOOL)animated {
