@@ -155,8 +155,13 @@ typedef NS_ENUM(NSInteger, SeafShareTab) {
                                                                action:@selector(onCreateFolder:)];
     plusItem.accessibilityLabel = NSLocalizedString(@"New folder", @"Seafile");
     // Keep the folder button as its own circular glass chip, separate from the OK pill.
+    // `sharesBackground` only exists in the iOS 26 SDK; set it via KVC so the project
+    // still compiles with older Xcode/SDK toolchains (e.g. Xcode 15.4 / iOS 17.5 SDK).
     if (@available(iOS 26.0, *)) {
-        plusItem.sharesBackground = NO;
+        SEL setSharesBackgroundSel = NSSelectorFromString(@"setSharesBackground:");
+        if ([plusItem respondsToSelector:setSharesBackgroundSel]) {
+            [plusItem setValue:@NO forKey:@"sharesBackground"];
+        }
     }
 
     // Blue pill confirm button — standard UIBarButtonItem text style
