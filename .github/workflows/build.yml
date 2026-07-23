@@ -13,11 +13,6 @@ jobs:
     runs-on: macos-14
 
     steps:
-      - name: Configure git to use HTTPS instead of SSH
-        run: |
-          git config --global url."https://github.com/".insteadOf "git@github.com:"
-          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
-
       - name: Checkout (with submodules)
         uses: actions/checkout@v4
         with:
@@ -34,8 +29,17 @@ jobs:
       - name: Install CocoaPods
         run: gem install cocoapods
 
-      - name: Pod install
-        run: pod install --repo-update
+      - name: Pod install (force HTTPS for git submodules)
+        run: |
+          set -x
+          git config --global url."https://github.com/".insteadOf "git@github.com:"
+          git config --global url."https://github.com/".insteadOf "ssh://git@github.com/"
+          echo "HOME=$HOME"
+          echo "=== global git url.* config ==="
+          git config --global --get-regexp '^url\.' || true
+          echo "=== ~/.gitconfig ==="
+          cat "$HOME/.gitconfig" || true
+          pod install --repo-update
 
       - name: Build (iOS Simulator, code signing disabled)
         run: |
